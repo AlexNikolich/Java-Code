@@ -1,0 +1,104 @@
+Sometimes it’s important for some classes to have exactly one instance.
+
+There could be many ways to create such type of class, but still, we will see how one way is better than the other.
+Let’s start with a simple way.
+
+What if, we provide a global variable that makes an object accessible? For example:
+
+
+public class SingletonEager {
+	public static SingletonEager sc = new SingletonEager();
+}
+
+-----------------------------------------------------------------------
+
+It’s always a good approach that an object should get created when it is required. So, we will create an object on the first call (Inside Constuctor) and then will return the same object on other successive calls.
+
+public class SingletonLazy {
+
+	private static SingletonLazy sc = null;
+
+	private SingletonLazy(){}
+
+	public static SingletonLazy getInstance(){
+		if(sc==null){
+			sc = new SingletonLazy();
+		}
+		return sc;
+	}
+}
+
+This surely looks good, doesn’t it? But this code will fail in a multi-threaded environment. Imagine two threads concurrently
+accessing the class, thread t1 gives the first call to the getInstance() method, it checks if the static variable sc is null and
+then gets interrupted due to some reason. Another thread t2 calls the getInstance() method successfully passes the if check
+and instantiates the object. Then, thread t1 gets awake and it also creates the object. At this time, there would be two objects ofthis class.
+
+--------------------------------------------------------------------------
+
+To avoid this, we will use the synchronized keyword to the getInstance() method. With this way, we force every thread
+to wait its turn before it can enter the method. So, no two threads will enter the method at the same time.
+
+public class SingletonLazyMultithreaded {
+	private static SingletonLazyMultithreaded sc = null;
+	private SingletonLazyMultithreaded(){}
+	public static synchronized SingletonLazyMultithreaded getInstance(){
+		if(sc==null){
+			sc = new SingletonLazyMultithreaded();
+		}
+		return sc;
+	}
+}
+
+Apart from this, there are some other ways to break the singleton pattern.
+• If the class is Serializable.
+• If it’s Clonable.
+• It can be break by Reflection.
+• And also if, the class is loaded by multiple class loaders.
+
+-------------------------------------------------------------------------
+
+The following example shows how you can protect your class from getting instantiated more than once.
+
+public class Singleton implements Serializable{
+
+	private static final long serialVersionUID = -1093810940935189395L;
+	private static Singleton sc = new Singleton();
+	private Singleton(){
+		if(sc!=null){
+			throw new IllegalStateException("Already created.");
+		}
+	}
+	public static Singleton getInstance(){
+		return sc;
+	}
+	private Object readResolve() throws ObjectStreamException{
+		return sc;
+	}
+	private Object writeReplace() throws ObjectStreamException{
+		return sc;
+	}
+	public Object clone() throws CloneNotSupportedException{
+		throw new CloneNotSupportedException("Singleton, cannot be clonned");
+	}
+	private static Class getClass(String classname) throws ClassNotFoundException {
+		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+		if(classLoader == null)
+		classLoader = Singleton.class.getClassLoader();
+		return (classLoader.loadClass(classname));
+	}
+}
+
+---------------------------------------------------------------------------------
+
+Although we can use all these techniques, there is one simple and easier way of creating a singleton class. As of JDK 1.5, you
+can create a singleton class using enums. The Enum constants are implicitly static and final and you cannot change their values
+once created.
+
+public class SingletoneEnum {
+
+	public enum SingleEnum{
+		SINGLETON_ENUM;
+	}
+}
+
+----------------------------------------------------------------------------------
