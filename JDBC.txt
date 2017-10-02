@@ -1,0 +1,102 @@
+CONNECTION
+
+First of all, Java applications need to create and establish a connection ao a specific database.
+This is done using a DriverManager, for example, one instance of the interface java.sql.DriverManager,
+or directly via a JDBC data source. For this purpose, the interface javax.sql.DataSource can be used.
+
+//MySQL driver is loaded
+Class.forName( "com.mysql.jdbc.Driver" );
+//Connection object is created using the db host and credentials
+Connection connect = DriverManager.getConnection("jdbc:mysql://localhost/countries"
++ "user=root&amp;password=root" );
+
+---------------------------------------------------------------------------------------------------------
+STATEMENTS
+
+Once we are connected against a database, we can use our java.sql.Connection for executing CRUD (create, read, update,
+delete) SQL statements or operations.
+
+Statement - Use the for general-purpose access to your database. Useful when you are using static SQL statements at runtime.
+The Statement interface cannot accept parameters.
+PreparedStatement - Use the when you plan to use the SQL statements many times. The PreparedStatement interface accepts input parameters at runtime.
+CallableStatement - Use the when you want to access the database stored procedures. The CallableStatement interface can also accept runtime input parameters.
+
+Statement stmt = null;
+try {
+   stmt = conn.createStatement( );
+   . . .
+}
+catch (SQLException e) {
+   . . .
+}
+finally {
+   . . .
+}
+
+
+
+--------------------------------------------------------------------------------------------------------
+RESULTSET
+
+The class java.sql.ResultSet represents a result set of database table. It is created, normally; by executing an SQL query
+(select statement using Statement or PreparedStatement). It contains rows of data, where the data is stored. These data can be
+accessed by index (starting by 1) or by attribute name:
+
+// creating the result set
+ResultSet resultSet = statement.executeQuery( "select * from COUNTRIES" );
+
+// iterating through the results rows
+
+while( resultSet.next() )
+{
+
+	// accessing column values by index or name
+		String name = resultSet.getString( "NAME" );
+		int population = resultSet.getInt( "POPULATION" );
+		System.out.println( "NAME: " + name );
+		System.out.println( "POPULATION: " + population );
+	// accessing column values by index or name
+		String name = resultSet.getString( 1 );
+		int population = resultSet.getInt( 2 );
+		System.out.println( "NAME: " + name );
+		System.out.println( "POPULATION: " + population );
+}
+
+
+The class ResultSet contains a methodcalled wasNull() that is very useful in these scenarios. Here is an example of its usage:
+
+Statement stmt = conn.createStatement( );
+String sql = "SELECT NAME, POPULATION FROM COUNTRIES";
+ResultSet rs = stmt.executeQuery(sql);
+int id = rs.getInt(1);
+if( rs.wasNull( ) ) {
+	...
+
+---------------------------------------------------------------------------------------------------------
+DRIVER
+
+The JDBC Driver Manager, java.sql.DriverManager, is one of the most important elements of the JDBC API. It is the
+basic service for handling a list of JDBC Drivers. It contains mechanisms and objects that allow Java applications to connect to
+a desired JDBC driver. It is in charge of managing the different types of JDBC database drivers. Summarizing the main task of
+the Driver Manager is to be aware of the list of available drivers and to handle the connection between the specific selected driverand the database.
+
+The most frequently used method of this class is DriverManager.getConnetion(). This method establishes a connection
+to a database.
+
+Here is an example of its use:
+
+// Create the connection with the default credentials
+java.sql.Connection conn = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "" );
+
+We can register drivers using the method DriverManager.registerDriver().:
+new org.hsqldb.jdbc.JDBCDriver();
+DriverManager.registerDriver( new org.hsqldb.jdbc.JDBCDriver() );
+
+We can also load a driver by calling the Class.forName() method:
+// Loading the HSQLDB JDBC driver
+Class.forName( "org.hsqldb.jdbc.JDBCDriver" );
+...
+// connection to JDBC using mysql driver
+Class.forName( "com.mysql.jdbc.Driver" );
+
+---------------------------------------------------------------------------------------------------------
