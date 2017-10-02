@@ -12,7 +12,7 @@ public class SingletonEager {
 
 -----------------------------------------------------------------------
 
-It’s always a good approach that an object should get created when it is required. So, we will create an object on the first call (Inside Constuctor) and then will return the same object on other successive calls.
+It’s always a good approach that an object should get created when it is required. So, we will create an object on the first call and then will return the same object on other successive calls.
 
 public class SingletonLazy {
 
