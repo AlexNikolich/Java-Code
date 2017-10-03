@@ -6,7 +6,7 @@
 		return false;
    	if (this.getClass() != obj.getClass()) 
 		return false;
-   	Product product = (Product) o;
+   	Product product = (Product) obj;
   	 if(this.name.equals(product.name) && 
 			this.description.equals(product.description) && 
 			this.id == product.id){
