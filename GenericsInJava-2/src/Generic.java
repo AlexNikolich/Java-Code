@@ -37,15 +37,30 @@ public class Generic {
 
 	}
 	// this method use generic - both String or Integer or...
-	public static <E> ArrayList<E> removeDuplicate(ArrayList<E> myList){
+	public static <E extends Comparable<E>> ArrayList<E> removeDuplicate(ArrayList<E> myList){
 
+		//USING COMPARABLE
+		int flag =0;
 		ArrayList<E> newList = new ArrayList<>();
-		
-		for(int i=0; i<myList.size(); i++){
-			if(!newList.contains(myList.get(i))){
-				newList.add(myList.get(i));			
+		newList.add(myList.get(0));
+		for(int i=0; i < myList.size();i++){
+			for(int y=0; y<newList.size(); y++){
+				if(myList.get(i).compareTo(newList.get(y)) ==0){
+					flag =1;
+				}
 			}
-		}		
+			if(flag == 0){
+				newList.add(myList.get(i));
+			}
+			flag =0;
+		}
+		
+		//USING Comtains method
+//		for(int i=0; i<myList.size(); i++){
+//			if(!newList.contains(myList.get(i))){
+//				newList.add(myList.get(i));			
+//			}
+//		}		
 		return newList;
 	}	
 }
